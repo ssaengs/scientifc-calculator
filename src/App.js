@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Graph from './Graph';
 
 const buttons = [
   ['C', '(', ')', '⌫'],
@@ -83,6 +84,7 @@ function App() {
           </div>
         </div>
       </div>
+      <Graph />
     </div>
   );
 }
