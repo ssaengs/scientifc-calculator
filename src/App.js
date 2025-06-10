@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Graph from './Graph';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
 const buttons = [
   ['C', '(', ')', '⌫'],
@@ -25,9 +36,22 @@ function parseExpression(expr) {
   return replaced;
 }
 
+function safeEval(expr, x) {
+  try {
+    // Only allow x and Math functions
+    // eslint-disable-next-line no-new-func
+    return Function('x', 'return ' + expr.replace(/\^/g, '**').replace(/sin/g, 'Math.sin').replace(/cos/g, 'Math.cos').replace(/tan/g, 'Math.tan').replace(/log/g, 'Math.log10').replace(/ln/g, 'Math.log').replace(/sqrt/g, 'Math.sqrt').replace(/pi/g, 'Math.PI'))(x);
+  } catch {
+    return NaN;
+  }
+}
+
 function App() {
   const [input, setInput] = useState('');
   const [error, setError] = useState(false);
+  const [graphExpr, setGraphExpr] = useState('sin(x)');
+  const [graphData, setGraphData] = useState({ labels: [], datasets: [] });
+  const [graphError, setGraphError] = useState('');
 
   const handleClick = (val) => {
     setError(false);
@@ -55,16 +79,46 @@ function App() {
     }
   };
 
+  const plotGraph = () => {
+    let labels = [];
+    let values = [];
+    setGraphError('');
+    for (let i = -10; i <= 10; i += 0.1) {
+      labels.push(Number(i.toFixed(2)));
+      let y = safeEval(graphExpr, i);
+      if (isNaN(y) || !isFinite(y)) {
+        values.push(null);
+      } else {
+        values.push(y);
+      }
+    }
+    if (values.every(v => v === null)) {
+      setGraphError('Invalid function or syntax.');
+    }
+    setGraphData({
+      labels,
+      datasets: [
+        {
+          label: `y = ${graphExpr}`,
+          data: values,
+          fill: false,
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1
+        }
+      ]
+    });
+  };
+
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
-        <div className="col-md-5">
-          <div className="card shadow calculator">
-            <div className="card-body">
-              <div className="mb-3">
-                <div className="form-control text-end fs-3" style={{height: '60px'}} readOnly>{input || '0'}</div>
-                {error && <div className="text-danger small">Invalid Expression</div>}
-              </div>
+        <div className="col-md-6 col-lg-5">
+          <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#f8f9fa'}}>
+            <div className="mb-3">
+              <div className="form-control text-end fs-3 bg-white" style={{height: '60px', borderRadius: 10}} readOnly>{input || '0'}</div>
+              {error && <div className="text-danger small">Invalid Expression</div>}
+            </div>
+            <div className="mb-3">
               {buttons.map((row, i) => (
                 <div className="row g-2 mb-2" key={i}>
                   {row.map((btn) => (
@@ -81,10 +135,25 @@ function App() {
                 </div>
               ))}
             </div>
+            <div className="mt-4">
+              <div className="input-group mb-2">
+                <input
+                  type="text"
+                  className="form-control"
+                  value={graphExpr}
+                  onChange={e => setGraphExpr(e.target.value)}
+                  placeholder="e.g. sin(x), x^2, log(x), sqrt(x)"
+                />
+                <button className="btn btn-primary" onClick={plotGraph}>Plot</button>
+              </div>
+              {graphError && <div className="text-danger mb-2">{graphError}</div>}
+              <div style={{height: 300}}>
+                <Line data={graphData} options={{responsive: true, plugins: {legend: {display: false}}}} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <Graph />
     </div>
   );
 }
