@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Line } from 'react-chartjs-2';
 import {
@@ -10,6 +9,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { useState } from 'react';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -110,12 +110,12 @@ function App() {
   };
 
   return (
-    <div className="container py-5">
+    <div className="container py-5" style={{ background: '#181a20', minHeight: '100vh' }}>
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-5">
-          <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#f8f9fa'}}>
+          <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#23272f', color: '#f8f9fa'}}>
             <div className="mb-3">
-              <div className="form-control text-end fs-3 bg-white" style={{height: '60px', borderRadius: 10}} readOnly>{input || '0'}</div>
+              <div className="form-control text-end fs-3" style={{height: '60px', borderRadius: 10, background: '#181a20', color: '#f8f9fa', border: '1px solid #343a40'}} readOnly>{input || '0'}</div>
               {error && <div className="text-danger small">Invalid Expression</div>}
             </div>
             <div className="mb-3">
@@ -125,7 +125,14 @@ function App() {
                     <div className="col" key={btn}>
                       <button
                         className={`btn btn-calc w-100 ${btn === '=' ? 'btn-success' : btn.match(/[\/*\-+=^]/) ? 'btn-primary' : btn === 'C' ? 'btn-secondary' : btn === '⌫' ? 'btn-secondary' : btn === '√' ? 'btn-info' : ['sin','cos','tan','log','ln','π'].includes(btn) ? 'btn-info' : 'btn-light'}`}
-                        style={{minWidth: 60, minHeight: 50, fontSize: '1.2rem'}}
+                        style={{
+                          minWidth: 60,
+                          minHeight: 50,
+                          fontSize: '1.2rem',
+                          background: btn === '=' ? '#1e88e5' : btn.match(/[\/*\-+=^]/) ? '#23272f' : btn === 'C' ? '#343a40' : btn === '⌫' ? '#343a40' : btn === '√' ? '#3949ab' : ['sin','cos','tan','log','ln','π'].includes(btn) ? '#3949ab' : '#23272f',
+                          color: btn === '=' ? '#fff' : '#f8f9fa',
+                          border: '1px solid #343a40',
+                        }}
                         onClick={() => handleClick(btn)}
                       >
                         {btn}
@@ -140,15 +147,16 @@ function App() {
                 <input
                   type="text"
                   className="form-control"
+                  style={{ background: '#181a20', color: '#f8f9fa', border: '1px solid #343a40' }}
                   value={graphExpr}
                   onChange={e => setGraphExpr(e.target.value)}
                   placeholder="e.g. sin(x), x^2, log(x), sqrt(x)"
                 />
-                <button className="btn btn-primary" onClick={plotGraph}>Plot</button>
+                <button className="btn btn-primary" style={{ background: '#1e88e5', border: '1px solid #343a40' }} onClick={plotGraph}>Plot</button>
               </div>
               {graphError && <div className="text-danger mb-2">{graphError}</div>}
               <div style={{height: 300}}>
-                <Line data={graphData} options={{responsive: true, plugins: {legend: {display: false}}}} />
+                <Line data={graphData} options={{responsive: true, plugins: {legend: {display: false}}, scales: {x: {ticks: {color: '#f8f9fa'}}, y: {ticks: {color: '#f8f9fa'}}}}} />
               </div>
             </div>
           </div>
