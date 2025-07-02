@@ -114,7 +114,7 @@ function App() {
       <div className="row justify-content-center mb-4">
         <div className="col-md-6 col-lg-5">
           <h1 style={{ color: '#90caf9', textAlign: 'center', fontWeight: 700, letterSpacing: 1, marginBottom: 30, textShadow: '0 2px 8px #0008' }}>
-            Scientific Calculator
+            Texas Instrument
           </h1>
         </div>
       </div>
