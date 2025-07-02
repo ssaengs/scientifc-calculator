@@ -13,26 +13,14 @@ import { useState } from 'react';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
-// TI-84 inspired button layout
 const buttons = [
-  // Top row: F-keys (not functional, for look)
-  ['F1', 'F2', 'F3', 'F4', 'F5'],
-  // Second row: Graph, Trace, Zoom, Window, Y=
-  ['Y=', 'WINDOW', 'ZOOM', 'TRACE', 'GRAPH'],
-  // Third row: 2nd, Mode, Del, Alpha, X,T,θ,n
-  ['2ND', 'MODE', 'DEL', 'ALPHA', 'X,T,θ,n'],
-  // Fourth row: Math, Apps, Prgm, Vars, Clear
-  ['MATH', 'APPS', 'PRGM', 'VARS', 'CLEAR'],
-  // Fifth row: directional pad (arrows)
-  ['↑', '', '', '', ''],
-  ['←', '', '→', '', ''],
-  // Sixth row: numbers and operations
-  ['7', '8', '9', '/', '^'],
-  ['4', '5', '6', '*', '√'],
-  ['1', '2', '3', '-', '(',],
-  ['0', '.', '(-)', '+', ')'],
-  // Last row: Enter, Trig, Log, Ln, π
-  ['ENTER', 'sin', 'cos', 'tan', 'π']
+  ['C', '(', ')', '⌫'],
+  ['7', '8', '9', '/'],
+  ['4', '5', '6', '*'],
+  ['1', '2', '3', '-'],
+  ['0', '.', '=', '+'],
+  ['^', '√', 'sin', 'cos'],
+  ['tan', 'log', 'ln', 'π']
 ];
 
 function parseExpression(expr) {
@@ -139,27 +127,23 @@ function App() {
             </div>
             <div className="mb-3">
               {buttons.map((row, i) => (
-                <div className="row g-1 mb-1" key={i}>
-                  {row.map((btn, j) => (
-                    <div className="col" key={btn + j}>
-                      {btn ? (
-                        <button
-                          className={`btn btn-calc w-100 ${btn === 'ENTER' ? 'btn-success' : btn.match(/[\/*\-+=^]/) ? 'btn-primary' : btn === 'CLEAR' ? 'btn-danger' : ['sin','cos','tan','log','ln','π','√'].includes(btn) ? 'btn-info' : btn === 'DEL' ? 'btn-warning' : btn === '2ND' ? 'btn-secondary' : 'btn-dark'}`}
-                          style={{
-                            minWidth: btn === 'ENTER' ? 90 : 60,
-                            minHeight: 45,
-                            fontSize: btn === 'ENTER' ? '1.1rem' : '1rem',
-                            background: btn === 'ENTER' ? '#43a047' : btn === 'CLEAR' ? '#e53935' : btn === 'DEL' ? '#fbc02d' : btn === '2ND' ? '#90caf9' : btn === 'ALPHA' ? '#f48fb1' : btn === 'MODE' ? '#bdbdbd' : btn === 'MATH' ? '#ce93d8' : btn === 'APPS' ? '#ffb74d' : btn === 'PRGM' ? '#a5d6a7' : btn === 'VARS' ? '#80cbc4' : btn === 'Y=' ? '#81d4fa' : btn === 'WINDOW' ? '#ffe082' : btn === 'ZOOM' ? '#b0bec5' : btn === 'TRACE' ? '#ffcc80' : btn === 'GRAPH' ? '#aed581' : btn === 'X,T,θ,n' ? '#fff59d' : btn === '↑' || btn === '←' || btn === '→' ? '#616161' : btn === '(-)' ? '#616161' : ['sin','cos','tan','log','ln','π','√'].includes(btn) ? '#3949ab' : '#23272f',
-                            color: ['DEL', '2ND', 'ALPHA', 'MODE', 'MATH', 'APPS', 'PRGM', 'VARS', 'Y=', 'WINDOW', 'ZOOM', 'TRACE', 'GRAPH', 'X,T,θ,n', '↑', '←', '→', '(-)'].includes(btn) ? '#23272f' : '#f8f9fa',
-                            border: '1px solid #343a40',
-                          }}
-                          onClick={() => handleClick(btn)}
-                        >
-                          {btn}
-                        </button>
-                      ) : (
-                        <div style={{ minWidth: 60, minHeight: 45 }}></div>
-                      )}
+                <div className="row g-2 mb-2" key={i}>
+                  {row.map((btn) => (
+                    <div className="col" key={btn}>
+                      <button
+                        className={`btn btn-calc w-100 ${btn === '=' ? 'btn-success' : btn.match(/[\/*\-+=^]/) ? 'btn-primary' : btn === 'C' ? 'btn-secondary' : btn === '⌫' ? 'btn-secondary' : btn === '√' ? 'btn-info' : ['sin','cos','tan','log','ln','π'].includes(btn) ? 'btn-info' : 'btn-light'}`}
+                        style={{
+                          minWidth: 60,
+                          minHeight: 50,
+                          fontSize: '1.2rem',
+                          background: btn === '=' ? '#1e88e5' : btn.match(/[\/*\-+=^]/) ? '#23272f' : btn === 'C' ? '#343a40' : btn === '⌫' ? '#343a40' : btn === '√' ? '#3949ab' : ['sin','cos','tan','log','ln','π'].includes(btn) ? '#3949ab' : '#23272f',
+                          color: btn === '=' ? '#fff' : '#f8f9fa',
+                          border: '1px solid #343a40',
+                        }}
+                        onClick={() => handleClick(btn)}
+                      >
+                        {btn}
+                      </button>
                     </div>
                   ))}
                 </div>
