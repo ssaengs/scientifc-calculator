@@ -110,20 +110,20 @@ function App() {
   };
 
   return (
-    <div className="container py-5" style={{ background: '#121212', minHeight: '100vh' }}>
+    <div className="container py-5" style={{ background: '#f8f9fa', minHeight: '100vh' }}>
       <div className="row justify-content-center mb-4">
         <div className="col-md-6 col-lg-5">
-          <h1 style={{ color: '#1976d2', textAlign: 'center', fontWeight: 700, letterSpacing: 1, marginBottom: 30, textShadow: '0 2px 8px #0008' }}>
+          <h1 style={{ color: '#90caf9', textAlign: 'center', fontWeight: 700, letterSpacing: 1, marginBottom: 30, textShadow: '0 2px 8px #0008' }}>
             Texas Instrument
           </h1>
         </div>
       </div>
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-5">
-          <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#1e1e1e', color: '#fff'}}>
+          <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#fff', color: '#23272f'}}>
             <div className="mb-3">
-              <div className="form-control text-end fs-3" style={{height: '60px', borderRadius: 10, background: '#232323', color: '#fff', border: '1px solid #333'}} readOnly>{input || '0'}</div>
-              {error && <div className="text-danger small" style={{color: '#d32f2f'}}>Invalid Expression</div>}
+              <div className="form-control text-end fs-3" style={{height: '60px', borderRadius: 10, background: '#fff', color: '#23272f', border: '1px solid #ced4da'}} readOnly>{input || '0'}</div>
+              {error && <div className="text-danger small">Invalid Expression</div>}
             </div>
             <div className="mb-3">
               {buttons.map((row, i) => (
@@ -131,15 +131,14 @@ function App() {
                   {row.map((btn) => (
                     <div className="col" key={btn}>
                       <button
-                        className={`btn btn-calc w-100 ${btn === '=' ? 'btn-primary' : btn.match(/[\/*\-+=^]/) ? 'btn-primary' : btn === 'C' ? 'btn-secondary' : btn === '⌫' ? 'btn-secondary' : btn === '√' ? 'btn-info' : ['sin','cos','tan','log','ln','π'].includes(btn) ? 'btn-info' : 'btn-light'}`}
+                        className={`btn btn-calc w-100 ${btn === '=' ? 'btn-success' : btn.match(/[\/*\-+=^]/) ? 'btn-primary' : btn === 'C' ? 'btn-secondary' : btn === '⌫' ? 'btn-secondary' : btn === '√' ? 'btn-info' : ['sin','cos','tan','log','ln','π'].includes(btn) ? 'btn-info' : 'btn-light'}`}
                         style={{
                           minWidth: 60,
                           minHeight: 50,
                           fontSize: '1.2rem',
-                          background: btn === '=' ? '#1976d2' : btn.match(/[\/*\-+=^]/) ? '#1976d2' : btn === 'C' ? '#9c27b0' : btn === '⌫' ? '#9c27b0' : btn === '√' ? '#388e3c' : ['sin','cos','tan','log','ln','π'].includes(btn) ? '#0288d1' : '#333',
-                          color: btn === '=' ? '#fff' : '#fff',
-                          border: btn === '=' ? '1px solid #1976d2' : btn === 'C' || btn === '⌫' ? '1px solid #9c27b0' : btn === '√' ? '1px solid #388e3c' : ['sin','cos','tan','log','ln','π'].includes(btn) ? '1px solid #0288d1' : '1px solid #444',
-                          boxShadow: btn === '=' ? '0 2px 8px #1976d299' : undefined
+                          background: btn === '=' ? '#198754' : btn.match(/[\/*\-+=^]/) ? '#0d6efd' : btn === 'C' ? '#6c757d' : btn === '⌫' ? '#6c757d' : btn === '√' ? '#0dcaf0' : ['sin','cos','tan','log','ln','π'].includes(btn) ? '#0dcaf0' : '#f8f9fa',
+                          color: btn === '=' ? '#fff' : '#23272f',
+                          border: '1px solid #ced4da',
                         }}
                         onClick={() => handleClick(btn)}
                       >
@@ -155,16 +154,16 @@ function App() {
                 <input
                   type="text"
                   className="form-control"
-                  style={{ background: '#232323', color: '#fff', border: '1px solid #333' }}
+                  style={{ background: '#fff', color: '#23272f', border: '1px solid #ced4da' }}
                   value={graphExpr}
                   onChange={e => setGraphExpr(e.target.value)}
                   placeholder="e.g. sin(x), x^2, log(x), sqrt(x)"
                 />
-                <button className="btn btn-primary" style={{ background: '#1976d2', border: '1px solid #1976d2', color: '#fff' }} onClick={plotGraph}>Plot</button>
+                <button className="btn btn-primary" style={{ background: '#0d6efd', border: '1px solid #0d6efd', color: '#fff' }} onClick={plotGraph}>Plot</button>
               </div>
-              {graphError && <div className="text-danger mb-2" style={{color: '#d32f2f'}}>{graphError}</div>}
+              {graphError && <div className="text-danger mb-2">{graphError}</div>}
               <div style={{height: 300}}>
-                <Line data={graphData} options={{responsive: true, plugins: {legend: {display: false}}, scales: {x: {ticks: {color: '#fff'}}, y: {ticks: {color: '#fff'}}}}} />
+                <Line data={graphData} options={{responsive: true, plugins: {legend: {display: false}}, scales: {x: {ticks: {color: '#23272f'}}, y: {ticks: {color: '#23272f'}}}}} />
               </div>
             </div>
           </div>
