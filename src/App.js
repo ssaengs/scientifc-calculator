@@ -111,6 +111,13 @@ function App() {
 
   return (
     <div className="container py-5" style={{ background: '#181a20', minHeight: '100vh' }}>
+      <div className="row justify-content-center mb-4">
+        <div className="col-md-6 col-lg-5">
+          <h1 style={{ color: '#90caf9', textAlign: 'center', fontWeight: 700, letterSpacing: 1, marginBottom: 30, textShadow: '0 2px 8px #0008' }}>
+            Scientific Calculator
+          </h1>
+        </div>
+      </div>
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-5">
           <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#23272f', color: '#f8f9fa'}}>
