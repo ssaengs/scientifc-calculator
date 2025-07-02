@@ -110,43 +110,56 @@ function App() {
   };
 
   return (
-    <div className="container py-5" style={{ background: '#121212', minHeight: '100vh' }}>
+    <div className="container py-5" style={{ background: 'linear-gradient(135deg, #232526 0%, #414345 100%)', minHeight: '100vh' }}>
       <div className="row justify-content-center mb-4">
         <div className="col-md-6 col-lg-5">
-          <h1 style={{ color: '#1976d2', textAlign: 'center', fontWeight: 700, letterSpacing: 1, marginBottom: 30, textShadow: '0 2px 8px #0008' }}>
+          <h1 style={{ color: '#ffb300', textAlign: 'center', fontWeight: 700, letterSpacing: 1, marginBottom: 30, textShadow: '0 2px 8px #0008' }}>
             Texas Instrument
           </h1>
         </div>
       </div>
       <div className="row justify-content-center">
         <div className="col-md-6 col-lg-5">
-          <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#1e1e1e', color: '#fff'}}>
+          <div className="card shadow calculator p-3" style={{borderRadius: 20, background: 'rgba(30,30,40,0.98)', color: '#fff'}}>
             <div className="mb-3">
               <div className="form-control text-end fs-3" style={{height: '60px', borderRadius: 10, background: '#232323', color: '#fff', border: '1px solid #333'}} readOnly>{input || '0'}</div>
-              {error && <div className="text-danger small" style={{color: '#d32f2f'}}>Invalid Expression</div>}
+              {error && <div className="text-danger small" style={{color: '#ff5252'}}>Invalid Expression</div>}
             </div>
             <div className="mb-3">
               {buttons.map((row, i) => (
                 <div className="row g-2 mb-2" key={i}>
-                  {row.map((btn) => (
-                    <div className="col" key={btn}>
-                      <button
-                        className={`btn btn-calc w-100 ${btn === '=' ? 'btn-primary' : btn.match(/[\/*\-+=^]/) ? 'btn-primary' : btn === 'C' ? 'btn-secondary' : btn === '⌫' ? 'btn-secondary' : btn === '√' ? 'btn-info' : ['sin','cos','tan','log','ln','π'].includes(btn) ? 'btn-info' : 'btn-light'}`}
-                        style={{
-                          minWidth: 60,
-                          minHeight: 50,
-                          fontSize: '1.2rem',
-                          background: btn === '=' ? '#1976d2' : btn.match(/[\/*\-+=^]/) ? '#1976d2' : btn === 'C' ? '#9c27b0' : btn === '⌫' ? '#9c27b0' : btn === '√' ? '#388e3c' : ['sin','cos','tan','log','ln','π'].includes(btn) ? '#0288d1' : '#333',
-                          color: btn === '=' ? '#fff' : '#fff',
-                          border: btn === '=' ? '1px solid #1976d2' : btn === 'C' || btn === '⌫' ? '1px solid #9c27b0' : btn === '√' ? '1px solid #388e3c' : ['sin','cos','tan','log','ln','π'].includes(btn) ? '1px solid #0288d1' : '1px solid #444',
-                          boxShadow: btn === '=' ? '0 2px 8px #1976d299' : undefined
-                        }}
-                        onClick={() => handleClick(btn)}
-                      >
-                        {btn}
-                      </button>
-                    </div>
-                  ))}
+                  {row.map((btn) => {
+                    // Colorful button logic
+                    let btnStyle = {};
+                    let btnClass = 'btn btn-calc w-100';
+                    if (!isNaN(btn) || btn === '.') {
+                      // Numbers
+                      btnStyle = { background: 'linear-gradient(135deg, #42e695 0%, #3bb2b8 100%)', color: '#232323', border: '1px solid #2ec4b6', fontWeight: 600 };
+                    } else if (btn === '=') {
+                      btnStyle = { background: 'linear-gradient(135deg, #ff512f 0%, #dd2476 100%)', color: '#fff', border: '1px solid #ff512f', fontWeight: 700, boxShadow: '0 2px 8px #ff512f99' };
+                    } else if (['+', '-', '*', '/', '^'].includes(btn)) {
+                      btnStyle = { background: 'linear-gradient(135deg, #36d1c4 0%, #5b86e5 100%)', color: '#fff', border: '1px solid #36d1c4', fontWeight: 700 };
+                    } else if (btn === 'C' || btn === '⌫') {
+                      btnStyle = { background: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)', color: '#232323', border: '1px solid #ffd200', fontWeight: 700 };
+                    } else if (btn === '√') {
+                      btnStyle = { background: 'linear-gradient(135deg, #43cea2 0%, #185a9d 100%)', color: '#fff', border: '1px solid #43cea2', fontWeight: 700 };
+                    } else if (['sin','cos','tan','log','ln','π'].includes(btn)) {
+                      btnStyle = { background: 'linear-gradient(135deg, #ff6a00 0%, #ee0979 100%)', color: '#fff', border: '1px solid #ee0979', fontWeight: 700 };
+                    } else {
+                      btnStyle = { background: 'linear-gradient(135deg, #8e54e9 0%, #4776e6 100%)', color: '#fff', border: '1px solid #8e54e9', fontWeight: 700 };
+                    }
+                    return (
+                      <div className="col" key={btn}>
+                        <button
+                          className={btnClass}
+                          style={{ minWidth: 60, minHeight: 50, fontSize: '1.2rem', ...btnStyle }}
+                          onClick={() => handleClick(btn)}
+                        >
+                          {btn}
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>
@@ -160,9 +173,9 @@ function App() {
                   onChange={e => setGraphExpr(e.target.value)}
                   placeholder="e.g. sin(x), x^2, log(x), sqrt(x)"
                 />
-                <button className="btn btn-primary" style={{ background: '#1976d2', border: '1px solid #1976d2', color: '#fff' }} onClick={plotGraph}>Plot</button>
+                <button className="btn btn-primary" style={{ background: 'linear-gradient(135deg, #36d1c4 0%, #5b86e5 100%)', border: '1px solid #36d1c4', color: '#fff', fontWeight: 700 }} onClick={plotGraph}>Plot</button>
               </div>
-              {graphError && <div className="text-danger mb-2" style={{color: '#d32f2f'}}>{graphError}</div>}
+              {graphError && <div className="text-danger mb-2" style={{color: '#ff5252'}}>{graphError}</div>}
               <div style={{height: 300}}>
                 <Line data={graphData} options={{responsive: true, plugins: {legend: {display: false}}, scales: {x: {ticks: {color: '#fff'}}, y: {ticks: {color: '#fff'}}}}} />
               </div>
