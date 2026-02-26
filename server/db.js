@@ -13,9 +13,12 @@ function redactedUrl() {
   }
 }
 
+const parsedUrl = new URL(connectionString);
+const sslmode = parsedUrl.searchParams.get('sslmode');
+parsedUrl.searchParams.delete('sslmode');
+const cleanConnectionString = parsedUrl.toString();
+
 function buildSslConfig() {
-  const url = new URL(connectionString);
-  const sslmode = url.searchParams.get('sslmode');
   if (!sslmode) return false;
 
   const caCertRaw = process.env.DATABASE_CA_CERT;
@@ -36,13 +39,14 @@ const sslConfig = buildSslConfig();
 
 console.log('[DB] config', {
   url: redactedUrl(),
+  sslmode,
   ssl: sslConfig ? 'on' : 'off',
   rejectUnauthorized: sslConfig ? sslConfig.rejectUnauthorized : 'n/a',
   caCert: sslConfig && sslConfig.ca ? 'provided' : 'not set',
 });
 
 const pool = new Pool({
-  connectionString,
+  connectionString: cleanConnectionString,
   ssl: sslConfig,
 });
 
