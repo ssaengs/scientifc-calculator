@@ -13,16 +13,29 @@ function redactedUrl() {
   }
 }
 
-const sslMode = connectionString.includes('sslmode=require') ? { rejectUnauthorized: false } : false;
+function buildSslConfig() {
+  if (!connectionString.includes('sslmode=require')) return false;
+  const cfg = {};
+  if (process.env.DATABASE_CA_CERT) {
+    cfg.ca = process.env.DATABASE_CA_CERT;
+    cfg.rejectUnauthorized = true;
+  } else {
+    cfg.rejectUnauthorized = false;
+  }
+  return cfg;
+}
+
+const sslConfig = buildSslConfig();
 
 console.log('[DB] config', {
   url: redactedUrl(),
-  ssl: sslMode ? 'on' : 'off',
+  ssl: sslConfig ? 'on' : 'off',
+  caCert: sslConfig && sslConfig.ca ? 'provided' : 'not set',
 });
 
 const pool = new Pool({
   connectionString,
-  ssl: sslMode,
+  ssl: sslConfig,
 });
 
 pool.on('error', (err) => {
