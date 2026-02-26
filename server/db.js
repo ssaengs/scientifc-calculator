@@ -14,15 +14,22 @@ function redactedUrl() {
 }
 
 function buildSslConfig() {
-  if (!connectionString.includes('sslmode=require')) return false;
-  const cfg = {};
-  if (process.env.DATABASE_CA_CERT) {
-    cfg.ca = process.env.DATABASE_CA_CERT;
-    cfg.rejectUnauthorized = true;
-  } else {
-    cfg.rejectUnauthorized = false;
+  const url = new URL(connectionString);
+  const sslmode = url.searchParams.get('sslmode');
+  if (!sslmode) return false;
+
+  const caCertRaw = process.env.DATABASE_CA_CERT;
+  if (caCertRaw) {
+    const ca = caCertRaw.replace(/\\n/g, '\n');
+    console.log('[DB] CA cert loaded', {
+      length: ca.length,
+      startsWithPem: ca.trimStart().startsWith('-----BEGIN'),
+      lineCount: ca.split('\n').length,
+    });
+    return { ca, rejectUnauthorized: true };
   }
-  return cfg;
+
+  return { rejectUnauthorized: false };
 }
 
 const sslConfig = buildSslConfig();
@@ -30,6 +37,7 @@ const sslConfig = buildSslConfig();
 console.log('[DB] config', {
   url: redactedUrl(),
   ssl: sslConfig ? 'on' : 'off',
+  rejectUnauthorized: sslConfig ? sslConfig.rejectUnauthorized : 'n/a',
   caCert: sslConfig && sslConfig.ca ? 'provided' : 'not set',
 });
 
