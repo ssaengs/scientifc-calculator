@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const { pool, initDb } = require('./db');
@@ -7,6 +8,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '..', 'build')));
 
 app.post('/api/history', async (req, res) => {
   const { expression, result } = req.body;
@@ -35,6 +37,10 @@ app.get('/api/history', async (_req, res) => {
     console.error('Failed to fetch history:', err.message);
     res.status(500).json({ error: 'Database error' });
   }
+});
+
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
 async function start() {

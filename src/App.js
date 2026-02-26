@@ -14,7 +14,7 @@ import HistoryWidget from './HistoryWidget';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_BASE = process.env.REACT_APP_API_URL || '';
 
 const buttons = [
   ['C', '(', ')', '⌫'],
