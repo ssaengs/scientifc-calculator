@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Line } from 'react-chartjs-2';
 import {
@@ -12,6 +12,8 @@ import {
 } from 'chart.js';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
+
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:3001';
 
 const buttons = [
   ['C', '(', ')', '⌫'],
@@ -52,6 +54,31 @@ function App() {
   const [graphExpr, setGraphExpr] = useState('sin(x)');
   const [graphData, setGraphData] = useState({ labels: [], datasets: [] });
   const [graphError, setGraphError] = useState('');
+  const [history, setHistory] = useState([]);
+
+  const fetchHistory = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/history`);
+      if (res.ok) setHistory(await res.json());
+    } catch {
+      /* backend may be unavailable */
+    }
+  }, []);
+
+  useEffect(() => { fetchHistory(); }, [fetchHistory]);
+
+  const saveToHistory = async (expression, result) => {
+    try {
+      await fetch(`${API_BASE}/api/history`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expression, result }),
+      });
+      fetchHistory();
+    } catch {
+      /* silent fail if backend unavailable */
+    }
+  };
 
   const handleClick = (val) => {
     setError(false);
@@ -61,9 +88,11 @@ function App() {
       setInput(input.slice(0, -1));
     } else if (val === '=') {
       try {
+        const expression = input;
         // eslint-disable-next-line no-new-func
         let result = Function('return ' + parseExpression(input))();
         setInput(result.toString());
+        saveToHistory(expression, result.toString());
       } catch {
         setInput('');
         setError(true);
@@ -152,6 +181,20 @@ function App() {
               </div>
             </div>
           </div>
+
+          {history.length > 0 && (
+            <div className="card shadow mt-3 p-3" style={{borderRadius: 20, background: '#f8f9fa'}}>
+              <h6 className="mb-2">History</h6>
+              <ul className="list-group list-group-flush" style={{maxHeight: 200, overflowY: 'auto'}}>
+                {history.map((h) => (
+                  <li key={h.id} className="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+                    <span className="text-muted small">{h.expression}</span>
+                    <span className="fw-bold">= {h.result}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>
