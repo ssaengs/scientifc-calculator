@@ -40,6 +40,6 @@
     "nth-check": "2.1.1",
     "postcss": "8.4.31",
     "bfj": "9.1.3",
-    "webpack-dev-server": "5.2.3"
+    "webpack-dev-server": "4.15.2"
   }
 }

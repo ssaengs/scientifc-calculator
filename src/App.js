@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import HistoryWidget from './HistoryWidget';
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
@@ -141,7 +142,7 @@ function App() {
   return (
     <div className="container py-5">
       <div className="row justify-content-center">
-        <div className="col-md-6 col-lg-5">
+        <div className="col-lg-5 col-md-6 mb-4 mb-lg-0">
           <div className="card shadow calculator p-3" style={{borderRadius: 20, background: '#f8f9fa'}}>
             <div className="mb-3">
               <div className="form-control text-end fs-3 bg-white" style={{height: '60px', borderRadius: 10}} readOnly>{input || '0'}</div>
@@ -181,20 +182,13 @@ function App() {
               </div>
             </div>
           </div>
+        </div>
 
-          {history.length > 0 && (
-            <div className="card shadow mt-3 p-3" style={{borderRadius: 20, background: '#f8f9fa'}}>
-              <h6 className="mb-2">History</h6>
-              <ul className="list-group list-group-flush" style={{maxHeight: 200, overflowY: 'auto'}}>
-                {history.map((h) => (
-                  <li key={h.id} className="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
-                    <span className="text-muted small">{h.expression}</span>
-                    <span className="fw-bold">= {h.result}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        <div className="col-lg-4 col-md-5">
+          <HistoryWidget
+            history={history}
+            onSelect={(result) => setInput(result)}
+          />
         </div>
       </div>
     </div>
