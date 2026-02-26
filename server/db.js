@@ -3,11 +3,42 @@ const { Pool, Client } = require('pg');
 const connectionString =
   process.env.DATABASE_URL || 'postgresql://localhost:5432/scientific_calculator';
 
-const pool = new Pool({ connectionString });
+function redactedUrl() {
+  try {
+    const url = new URL(connectionString);
+    if (url.password) url.password = '***';
+    return url.toString();
+  } catch {
+    return '(invalid URL)';
+  }
+}
+
+console.log('[DB] config', {
+  url: redactedUrl(),
+  ssl: process.env.DATABASE_URL ? 'likely required' : 'off',
+});
+
+const pool = new Pool({
+  connectionString,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+});
+
+pool.on('error', (err) => {
+  console.error('[DB] pool idle client error', { code: err.code, message: err.message, stack: err.stack });
+});
+
+pool.on('connect', () => {
+  console.log('[DB] pool new client connected');
+});
 
 async function ensureDatabase() {
   const url = new URL(connectionString);
   const dbName = url.pathname.replace('/', '');
+
+  if (process.env.DATABASE_URL) {
+    console.log(`[DB] managed database detected, skipping ensureDatabase for "${dbName}"`);
+    return;
+  }
 
   url.pathname = '/postgres';
   const client = new Client({ connectionString: url.toString() });
@@ -20,11 +51,38 @@ async function ensureDatabase() {
     );
     if (rows.length === 0) {
       await client.query(`CREATE DATABASE "${dbName}"`);
-      console.log(`Created database "${dbName}"`);
+      console.log(`[DB] created database "${dbName}"`);
     }
   } finally {
     await client.end();
   }
+}
+
+let healthCheckInterval;
+
+function startHealthCheck() {
+  healthCheckInterval = setInterval(async () => {
+    const start = Date.now();
+    try {
+      const { rows } = await pool.query('SELECT NOW() AS server_time');
+      const duration = Date.now() - start;
+      console.log('[DB] health check OK', {
+        duration: `${duration}ms`,
+        serverTime: rows[0].server_time,
+        totalPool: pool.totalCount,
+        idlePool: pool.idleCount,
+        waitingPool: pool.waitingCount,
+      });
+    } catch (err) {
+      const duration = Date.now() - start;
+      console.error('[DB] health check FAILED', {
+        duration: `${duration}ms`,
+        code: err.code,
+        message: err.message,
+      });
+    }
+  }, 30000);
+  healthCheckInterval.unref();
 }
 
 async function query(text, params) {
@@ -53,6 +111,7 @@ async function initDb() {
     )
   `);
   console.log('[DB] initialized successfully');
+  startHealthCheck();
 }
 
 module.exports = { pool, query, initDb };
