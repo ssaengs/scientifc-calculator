@@ -13,14 +13,16 @@ function redactedUrl() {
   }
 }
 
+const sslMode = connectionString.includes('sslmode=require') ? { rejectUnauthorized: false } : false;
+
 console.log('[DB] config', {
   url: redactedUrl(),
-  ssl: process.env.DATABASE_URL ? 'likely required' : 'off',
+  ssl: sslMode ? 'on' : 'off',
 });
 
 const pool = new Pool({
   connectionString,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+  ssl: sslMode,
 });
 
 pool.on('error', (err) => {

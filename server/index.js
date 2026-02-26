@@ -41,10 +41,23 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
 });
 
+process.on('uncaughtException', (err) => {
+  console.error('[FATAL] uncaught exception', err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[FATAL] unhandled rejection', reason);
+});
+
 async function start() {
-  await initDb();
+  console.log('[SERVER] starting...', { port: PORT, nodeVersion: process.version, pid: process.pid });
+  try {
+    await initDb();
+  } catch (err) {
+    console.error('[SERVER] database init failed, starting without DB', { code: err.code, message: err.message, stack: err.stack });
+  }
   app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`[SERVER] running on http://localhost:${PORT}`);
   });
 }
 
