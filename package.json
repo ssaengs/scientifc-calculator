@@ -15,7 +15,7 @@
     "yaml": "^2.8.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server/index.js",
     "server": "node server/index.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
