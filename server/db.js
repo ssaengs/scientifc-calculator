@@ -27,9 +27,24 @@ async function ensureDatabase() {
   }
 }
 
+async function query(text, params) {
+  const start = Date.now();
+  try {
+    const result = await pool.query(text, params);
+    const duration = Date.now() - start;
+    console.log('[DB] query OK', { text: text.replace(/\s+/g, ' ').trim(), params, duration: `${duration}ms`, rows: result.rowCount });
+    return result;
+  } catch (err) {
+    const duration = Date.now() - start;
+    console.error('[DB] query FAILED', { text: text.replace(/\s+/g, ' ').trim(), params, duration: `${duration}ms` });
+    console.error('[DB] error details', { code: err.code, message: err.message, detail: err.detail, table: err.table, constraint: err.constraint, stack: err.stack });
+    throw err;
+  }
+}
+
 async function initDb() {
   await ensureDatabase();
-  await pool.query(`
+  await query(`
     CREATE TABLE IF NOT EXISTS calculations (
       id SERIAL PRIMARY KEY,
       expression TEXT NOT NULL,
@@ -37,6 +52,7 @@ async function initDb() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  console.log('[DB] initialized successfully');
 }
 
-module.exports = { pool, initDb };
+module.exports = { pool, query, initDb };

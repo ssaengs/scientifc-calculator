@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
 const cors = require('cors');
-const { pool, initDb } = require('./db');
+const { query, initDb } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,25 +16,23 @@ app.post('/api/history', async (req, res) => {
     return res.status(400).json({ error: 'expression and result are required' });
   }
   try {
-    const row = await pool.query(
+    const row = await query(
       'INSERT INTO calculations (expression, result) VALUES ($1, $2) RETURNING *',
       [expression, String(result)]
     );
     res.json(row.rows[0]);
   } catch (err) {
-    console.error('Failed to save calculation:', err.message);
     res.status(500).json({ error: 'Database error' });
   }
 });
 
 app.get('/api/history', async (_req, res) => {
   try {
-    const { rows } = await pool.query(
+    const { rows } = await query(
       'SELECT * FROM calculations ORDER BY created_at DESC LIMIT 50'
     );
     res.json(rows);
   } catch (err) {
-    console.error('Failed to fetch history:', err.message);
     res.status(500).json({ error: 'Database error' });
   }
 });
