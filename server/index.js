@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, '..', 'build')));
 app.post('/api/history', async (req, res) => {
   const { expression, result } = req.body;
   if (!expression || result === undefined) {
-    return res.status(400).json({ error: 'expression and result are required' });
+    return res.status(400).json({ error: 'expression and result are required!' });
   }
   try {
     const row = await query(
